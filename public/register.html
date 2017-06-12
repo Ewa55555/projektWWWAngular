@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="controllers/registercontroller.js"></script>
+<body>
+<div class="container" ng-controller="RegisterCtrl">
+<form ng-submit="onSubmit()">
+    <div class="form-group">
+        <label for="login">Login</label>
+        <input type="text" class="form-control" id="login" ng-model="user.login" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" ng-model="user.email" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Hasło</label>
+        <input type="password" class="form-control" id="password" ng-model="user.password" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Powtórz hasło</label>
+        <input type="password" class="form-control" id="password2" ng-model="user.password2" required>
+
+    </div>
+    <div>
+        {{errorMessage}}
+    </div>
+    <button type="submit" class="btn btn-default">Zarejestruj</button>
+
+</form>
+</div>
+</body>
+</html>
