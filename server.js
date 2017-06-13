@@ -5,9 +5,6 @@ var app = express();
 var logger = require("morgan");
 var path = require("path");
 var router = express.Router();
-//var session = require('express-session')
-//app.use(session({secret: 'ssshhhhh', resave: false,
- //   saveUninitialized: true}));
 var bodyParser = require("body-parser");
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
@@ -184,6 +181,62 @@ app.post('/addproduct', function(req, res) {
     });
 
 });
+
+app.get('/product/:id', function (req, res) {
+
+    {
+        var products = function(db,callback) {
+            var id = req.params.id;
+            console.log(id);
+            db.collection('products').find({"id": parseInt(id, 10)}).toArray(function (err, results) {
+                console.log("produkt");
+                console.log(results);
+                return callback(results);
+            });
+
+        };
+        var findComments = function(db, callback){
+            var id = req.params.id;
+            db.collection('comments').find({"productId": id}).toArray(function(err, results){
+                console.log("komentarze");
+                console.log(results);
+                return callback(results);
+            })
+        };
+        MongoClient.connect(url, function (err, db) {
+            assert.equal(null, err);
+            products(db,function(array) {
+                findComments(db, function(c){
+                    db.close();
+                    res.json(c.concat(array[0]));
+                });
+
+            });
+        });
+
+    }
+});
+
+app.post('/comment/:id', function(req, res){
+        var insertDocument = function (db,callback) {
+            var productId = req.params.id;
+            db.collection('comments').insertOne({"id": Date.now(), "productId": productId, "comment": req.body.body,
+                "user": req.session.username, "time": new Date()}, function (err, result) {
+                assert.equal(err, null);
+                callback();
+            });
+        };
+        MongoClient.connect(url, function (err, db) {
+            assert.equal(null, err);
+            insertDocument(db,function(){
+                db.close();
+                res.send('OK');
+            });
+
+
+        });
+
+})
 
 http.createServer(app).listen(3000, function() {
     console.log("Dziala");

@@ -1,0 +1,46 @@
+<div container>
+<div col-sm-8.col-sm-offset-1>
+<h2>{{product.name}}
+<h5>
+    <div ng-if="product.users == 0">
+      <div panel_body>Ocena: 0</div>
+    </div>
+    <div ng-if="product.users != 0">
+        <div panel_body> Ocena: {{product.marks / product.users}}
+        </div>
+    </div>
+</h5>
+</h2>
+</div>
+</div>
+<p>
+<a href='/mark/' + product.id> Dodaj ocenę</a>
+
+<h4> Opis</h4>
+    <p>{{product.description}}</p>
+
+<h3>Komentarze</h3>
+    <p>
+<a href='/comment'>Dodaj komentarz</a>
+    </p>
+<div container>
+    <div panel_default>
+        <div col-sm-6.col-sm-offset-1>
+            <div ng-if="comments.lenght== 0">
+                <div panel-body>
+                    Brak komentarzy
+                </div>
+            </div>
+            <div ng-if="comments.lenght!= 0">
+                <li ng-repeat="comment in comments" class="list-group-item">
+                    <div class="panel.panel-default">
+                        <div class="panel-heading">{{comment.user}}</div>
+                        <div class="text-muted.pull-right">{{comment.time}}</div>
+                        <div class="panel-body">{{comment.comment}}</div>
+
+                    </div>
+                </li>
+            </div>
+        </div>
+    </div>
+</div>
