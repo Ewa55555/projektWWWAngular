@@ -128,20 +128,18 @@ app.post('/login', function (req, res)
     var searchLogin = function(db,callback) {
         db.collection('users').find({"username": username}).count(function (e, count) {
             if (count > 0) {
-                console.log("blee");
                 db.collection('users').find({"username": username}).toArray(function (err, results) {
                     console.log(results[0]['password']);
                     if (results[0]['password'] == hash) {
-                        console.log("Dobre hasło")
                         res.status(200).send('OK');
                     }
                     else {
-                        req.send("Podane hasło jest błędne");
+                        res.send("Podane hasło jest błędne");
                     }
                 });
             }
             else {
-                req.send("Podany login nie istnieje");
+                res.send("Podany login nie istnieje");
             }
 
         });
@@ -161,7 +159,6 @@ app.post('/addproduct', function(req, res) {
     var string2;
     console.log("description"+ req.body.description);
     var insertDocument = function (db,callback) {
-        console.log("widze id");
         db.collection('products').insertOne({"id": Date.now(), "name": req.body.name,
             "description": req.body.description,"path": string2, "marks": 0, "users": 0}, function (err, result) {
             assert.equal(err, null);
@@ -180,13 +177,11 @@ app.post('/addproduct', function(req, res) {
 });
 
 app.get('/product/:id', function (req, res) {
-
     {
         var products = function(db,callback) {
             var id = req.params.id;
             console.log(id);
             db.collection('products').find({"id": parseInt(id, 10)}).toArray(function (err, results) {
-                console.log("produkt");
                 console.log(results);
                 return callback(results);
             });
@@ -195,7 +190,6 @@ app.get('/product/:id', function (req, res) {
         var findComments = function(db, callback){
             var id = req.params.id;
             db.collection('comments').find({"productId": id}).toArray(function(err, results){
-                console.log("komentarze");
                 console.log(results);
                 return callback(results);
             })
@@ -215,7 +209,6 @@ app.get('/product/:id', function (req, res) {
 });
 
 app.post('/comment/:id', function(req, res){
-    console.log("weszlam do coment");
         var insertDocument = function (db,callback) {
             var productId = req.params.id;
             db.collection('comments').insertOne({"id": Date.now(), "productId": productId, "comment": req.body.comment,
@@ -244,7 +237,6 @@ app.post('/mark/:id', function(req, res){
             db.collection('marks').insertOne({"id": Date.now(), "productId": productId, "mark": req.body,
                 "user": 'Anonim', "time": new Date()}, function (err, result) {
                 assert.equal(err, null);
-                console.log("alo");
                 db.collection('products').update(
                     {"id": parseInt(productId, 10)},
                     { $inc: { "marks": parseInt(req.body, 10), "users": 1 } }, function(err, result){
