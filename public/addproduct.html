@@ -1,0 +1,16 @@
+<div class="container" ng-controller="AddProductCtrl">
+    <form ng-submit="onSubmit()">
+        <div class="form-group">
+            <label for="name">Nazwa</label>
+            <input type="text" class="form-control" id="name" ng-model="product.name" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Opis</label>
+            <textarea class="form-control" id="description" ng-model="product.description" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-default">Dodaj produkt</button>
+        <div>
+            {{errorMessage}}
+        </div>
+    </form>
+</div>

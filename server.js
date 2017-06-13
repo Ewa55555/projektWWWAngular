@@ -20,8 +20,8 @@ app.set("views", path.resolve(__dirname, "views")); //podkatalog views
 app.use(logger("dev"));   //midlewearstack
 var mongoose = require('mongoose');
 app.use(bodyParser.urlencoded({ extended: false }));  //odkodowuje formularz
-//var fileUpload = require('express-fileupload');
-//app.use(fileUpload());
+var fileUpload = require('express-fileupload');
+app.use(fileUpload());
 app.use(bodyParser.json());
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
@@ -39,6 +39,7 @@ app.get('/', function (req, res) {
 });
 app.use(express.static(__dirname + "/public"))
 app.post('/register', function (req, res) {
+    console.log("jestem w registr post");
     var username = req.body.login;
     var password = req.body.password;
     var password2 = req.body.password2;
@@ -55,7 +56,6 @@ app.post('/register', function (req, res) {
     }
     var insertDocument = function (db, callback) {
         db.collection('users').insertOne({"username": username, "password": hash, "email":mail,"role":"user"}, function (err, result) {
-            console.log('dodaje do bazy');
             assert.equal(err, null);
             callback();
         });
@@ -69,13 +69,11 @@ app.post('/register', function (req, res) {
             {
                 res.send("Taki login już istnieje");
                 console.log("Taki login już istnieje");
-                //res.redirect('/register');
             }
             else
             {
                 if(ok && emailOk)
                 {
-                    //delete req.session.error;
                     callback();
                 }
                 else
@@ -87,7 +85,6 @@ app.post('/register', function (req, res) {
                         res.send("Wprowadzony e-mail nie jest poprawny");
                         console.log("Wprowadzony e-mail nie jest poprawny")
                     }
-                    //res.redirect('/register');
                 }
 
             }
@@ -100,8 +97,8 @@ app.post('/register', function (req, res) {
                 insertDocument(db, function () {
                     db.close();
                 });
-                //res.redirect????
-                });
+            res.status(200).send('OK');
+            });
         });
 
 
@@ -125,8 +122,68 @@ app.get('/productsList', function(req, res) {
 
 });
 
+app.post('/login', function (req, res)
+{
+    var username = req.body.login;
+    console.log(username);
+    var password = req.body.password;
+    var hash =crypto.createHash('md5').update(password).digest('hex');
+    var searchLogin = function(db,callback) {
+        db.collection('users').find({"username": username}).count(function (e, count) {
+            if (count > 0) {
+                console.log("blee");
+                db.collection('users').find({"username": username}).toArray(function (err, results) {
+                    console.log(results[0]['password']);
+                    if (results[0]['password'] == hash) {
+                        console.log("Dobre hasło")
+                        res.status(200).send('OK');
+                    }
+                    else {
+                        req.send("Podane hasło jest błędne");
+                    }
+                });
+            }
+            else {
+                req.send("Podany login nie istnieje");
+            }
+
+        });
+
+    };
+    MongoClient.connect(url, function (err, db) {
+        assert.equal(null, err);
+        searchLogin(db,function() {
+            db.close();
+        });
+    });
 
 
+});
+
+app.post('/addproduct', function(req, res) {
+    var id;
+    var string;
+    var string2;
+    console.log("alo");
+    console.log("description"+ req.body.description);
+    var insertDocument = function (db,callback) {
+        console.log("widze id");
+        db.collection('products').insertOne({"id": id, "name": req.body.name,
+            "description": req.body.description,"path": string2, "marks": 0, "users": 0}, function (err, result) {
+            assert.equal(err, null);
+            callback();
+        });
+    };
+
+    MongoClient.connect(url, function (err, db) {
+        assert.equal(null, err);
+        insertDocument(db,function(){
+            db.close();
+            res.status(200).send('OK');
+        });
+    });
+
+});
 
 http.createServer(app).listen(3000, function() {
     console.log("Dziala");

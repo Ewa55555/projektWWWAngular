@@ -1,26 +1,39 @@
-<!DOCTYPE html>
-<html ng-app="myApp">
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-<script src="controllers/controller.js"></script>
-<head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<style>
+    body, html {
+        height: 100%;
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-    <title>Opiniotwórczy portal kosmetyczny</title>
-</head>
-<body>
-    <div class="container" ng-controller="ProductsCtrl">
-        <h1>Strona użytkownika</h1>
-        <button class="btn btn-primary" ng-click="logout()">Wyloguj się</button>
-        <table class="table">
-            <tbody>
-                <tr ng-repeat="product in productsList">
-                    <td>{{product.name}}</td>
-                    <td>{{product.description}}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</body>
-</html>
+    }
+
+    .parallax {
+        /* The image used */
+        background-image: url("./czerwona_szminka.jpg");
+
+        /* Full height */
+        min-height: 300px;
+
+        /* Create the parallax scrolling effect */
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+</style>
+<div class="container" ng-controller="ProductsCtrl">
+    <h1>Strona użytkownika</h1>
+    <button class="btn btn-primary" ng-click="logout()">Wyloguj się</button>
+    <button class="btn btn-primary" ng-click="addProduct()">Dodaj produkt</button>
+    <ul class="list-group">
+        <div infinite-scroll="getMoreData()">
+            <li ng-repeat="product in data" class="list-group-item">
+                <div class="parallax"></div>
+                <div>
+                    <h2>{{ product.name }}</h2>
+                    <h4>{{product.description}}</h4>
+                </div>
+                <div class="parallax"></div>
+            </li>
+        </div>
+    </ul>
+
+</div>
