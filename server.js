@@ -35,7 +35,7 @@ var Todo = mongoose.model('Todo', {
     text : String
 });
 app.get('/', function (req, res) {
-    res.sendfile('./public/register.html');
+    res.sendfile('./public/index.html');
 });
 app.use(express.static(__dirname + "/public"))
 app.post('/register', function (req, res) {
