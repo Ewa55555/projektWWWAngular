@@ -8,8 +8,9 @@ myApp.config(function($routeProvider){
         .when('/register', { controller: 'RegisterCtrl', templateUrl: 'register.html' })
         .when('/login', { controller: 'LoginCtrl', templateUrl: 'login.html' })
         .when('/addproduct', { controller: 'AddProductCtrl', templateUrl: 'addproduct.html' })
+        .when('/comment/:productId?', { controller: 'CommentCtrl', templateUrl: 'comment.html'})
         .when('/product/:productId?', { controller: 'ShowProductCtrl', templateUrl: 'showproduct.html' })
-        .when('/comment/:productId?', { controller: 'CommentCtrl', templateUrl: 'comment.html' })
+        .when('/mark/:productId?', { controller: 'MarkCtrl', templateUrl: 'mark.html' })
         .otherwise( { redirectTo: '/' } );
 });
 
@@ -38,23 +39,51 @@ myApp.controller('LoginCtrl',['$scope','$http', function ($scope, $http){
 }]);
 
 myApp.controller('CommentCtrl',['$scope','$http', '$routeParams', function ($scope, $http, $routeParams){
-   // var id = $routeParams.productId;
-    console.log('jestem w comment ctrl')
+    var id = $routeParams.productId;
+    console.log('jestem w comment ctrl '+id);
 
-    // $scope.onSubmit = function () {
-    //     var postData = angular.toJson($scope.comment, true)
-    //     $http.post('/comment/'+id,postData).then(function(res) {
-    //         if(res.data != 'OK'){
-    //             $scope.errorMessage = res.data;
-    //             console.log('aaa');
-    //         }else {
-    //             console.log("weszlo do else");
-    //             window.location = "#!/product/"+id;
-    //         }
-    //     }, function (res) {
-    //         console.log('pupa '+res.body);
-    //     });
-    // }
+    $scope.onSubmit = function () {
+        var postData = angular.toJson($scope.comment, true)
+        $http.post('/comment/'+id, postData).then(function(res) {
+            if(res.data != 'OK'){
+                $scope.errorMessage = res.data;
+                console.log('aaa');
+            }else {
+                console.log("weszlo do else");
+                window.location = "#!/product/"+id;
+            }
+        }, function (res) {
+            console.log('pupa '+res.body);
+        });
+    }
+}]);
+
+myApp.controller('ShowProductCtrl',['$scope','$http', '$routeParams', function ($scope, $http, $routeParams) {
+    var id = $routeParams.productId;
+    $http.get('/product/'+id).then(function (response) {
+        $scope.product = response.data[response.data.length-1];
+        $scope.comments = response.data.slice(0, response.data.length-1);
+        console.log("w show product "+$scope.product);
+    });
+}]);
+
+myApp.controller('MarkCtrl',['$scope','$http', '$routeParams', function ($scope, $http, $routeParams){
+    var id = $routeParams.productId;
+    console.log('jestem w comment ctrl '+id);
+
+    $scope.onSubmit = function () {
+        $http.post('/mark/'+id, $scope.marks).then(function(res) {
+            if(res.data != 'OK'){
+                $scope.errorMessage = res.data;
+                console.log('aaa');
+            }else {
+                console.log("weszlo do else");
+                window.location = "#!/product/"+id;
+            }
+        }, function (res) {
+            console.log('pupa '+res.body);
+        });
+    }
 }]);
 
 myApp.controller('ShowProductCtrl',['$scope','$http', '$routeParams', function ($scope, $http, $routeParams) {

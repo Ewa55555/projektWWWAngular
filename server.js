@@ -158,14 +158,11 @@ app.post('/login', function (req, res)
 });
 
 app.post('/addproduct', function(req, res) {
-    var id;
-    var string;
     var string2;
-    console.log("alo");
     console.log("description"+ req.body.description);
     var insertDocument = function (db,callback) {
         console.log("widze id");
-        db.collection('products').insertOne({"id": id, "name": req.body.name,
+        db.collection('products').insertOne({"id": Date.now(), "name": req.body.name,
             "description": req.body.description,"path": string2, "marks": 0, "users": 0}, function (err, result) {
             assert.equal(err, null);
             callback();
@@ -218,10 +215,11 @@ app.get('/product/:id', function (req, res) {
 });
 
 app.post('/comment/:id', function(req, res){
+    console.log("weszlam do coment");
         var insertDocument = function (db,callback) {
             var productId = req.params.id;
-            db.collection('comments').insertOne({"id": Date.now(), "productId": productId, "comment": req.body.body,
-                "user": req.session.username, "time": new Date()}, function (err, result) {
+            db.collection('comments').insertOne({"id": Date.now(), "productId": productId, "comment": req.body.comment,
+                "user": 'Anonim', "time": new Date()}, function (err, result) {
                 assert.equal(err, null);
                 callback();
             });
@@ -237,6 +235,37 @@ app.post('/comment/:id', function(req, res){
         });
 
 })
+
+app.post('/mark/:id', function(req, res){
+
+        var insertDocument = function (db,callback) {
+            var productId = req.params.id;
+            console.log("w marku mark"+req.body);
+            db.collection('marks').insertOne({"id": Date.now(), "productId": productId, "mark": req.body,
+                "user": 'Anonim', "time": new Date()}, function (err, result) {
+                assert.equal(err, null);
+                console.log("alo");
+                db.collection('products').update(
+                    {"id": parseInt(productId, 10)},
+                    { $inc: { "marks": parseInt(req.body, 10), "users": 1 } }, function(err, result){
+                        callback();
+                    }
+                )
+
+            });
+
+
+        };
+        MongoClient.connect(url, function (err, db) {
+            assert.equal(null, err);
+            insertDocument(db,function(){
+                db.close();
+                res.send('OK');
+            });
+
+        });
+
+});
 
 http.createServer(app).listen(3000, function() {
     console.log("Dziala");
